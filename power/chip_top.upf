@@ -1,0 +1,122 @@
+# ============================================================
+# Unified Power Format (UPF)
+# Mini-SoC Power Intent Demonstration
+# ============================================================
+
+upf_version 2.1
+
+# ------------------------------------------------------------
+# Define the design top
+# ------------------------------------------------------------
+
+set_design_top chip_top
+
+
+# ------------------------------------------------------------
+# TOP-LEVEL POWER DOMAIN
+# ------------------------------------------------------------
+
+create_power_domain chip_top -include_scope
+
+
+# ------------------------------------------------------------
+# POWER SUPPLY PORTS
+# ------------------------------------------------------------
+
+create_supply_port VSS -direction in
+create_supply_port GND -direction in
+
+
+# ------------------------------------------------------------
+# POWER SUPPLY NETS
+# ------------------------------------------------------------
+
+create_supply_net VSS
+create_supply_net GND
+
+
+# ------------------------------------------------------------
+# CONNECT SUPPLY PORTS TO SUPPLY NETS
+# ------------------------------------------------------------
+
+connect_supply_net VSS -ports VSS
+connect_supply_net GND -ports GND
+
+
+# ------------------------------------------------------------
+# POWER DOMAIN PD0
+# Contains the switchable processing block
+# ------------------------------------------------------------
+
+create_power_domain PD0 \
+    -elements {PD0_inst}
+
+
+# ------------------------------------------------------------
+# POWER DOMAIN PD1
+# Contains always-on block and PMC
+# ------------------------------------------------------------
+
+create_power_domain PD1 \
+    -elements {PD1_inst PMC}
+
+
+# ------------------------------------------------------------
+# SUPPLY SET FOR PD0
+# ------------------------------------------------------------
+
+create_supply_set PD0_set \
+    -function {power VSS} \
+    -function {ground GND}
+
+
+# ------------------------------------------------------------
+# SUPPLY SET FOR PD1
+# ------------------------------------------------------------
+
+create_supply_set PD1_set \
+    -function {power VSS} \
+    -function {ground GND}
+
+
+# ------------------------------------------------------------
+# ASSOCIATE SUPPLY SETS WITH POWER DOMAINS
+# ------------------------------------------------------------
+
+associate_supply_set PD0_set \
+    -handle PD0.primary
+
+associate_supply_set PD1_set \
+    -handle PD1.primary
+
+
+# ------------------------------------------------------------
+# TOP-LEVEL DOMAIN SUPPLY
+# ------------------------------------------------------------
+
+set_domain_supply_net chip_top \
+    -primary_power_net VSS \
+    -primary_ground_net GND
+
+
+# ------------------------------------------------------------
+# PD0 SUPPLY
+# ------------------------------------------------------------
+
+set_domain_supply_net PD0 \
+    -primary_power_net VSS \
+    -primary_ground_net GND
+
+
+# ------------------------------------------------------------
+# PD1 SUPPLY
+# ------------------------------------------------------------
+
+set_domain_supply_net PD1 \
+    -primary_power_net VSS \
+    -primary_ground_net GND
+
+
+# ------------------------------------------------------------
+# END OF UPF
+# ------------------------------------------------------------
