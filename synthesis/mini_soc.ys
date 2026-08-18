@@ -1,0 +1,37 @@
+# Mini-SoC Yosys Synthesis Script
+
+# Read RTL source files
+read_verilog ../counter.v
+read_verilog ../alu.v
+read_verilog ../mux2x1.v
+read_verilog ../mini_soc.v
+
+# Check design hierarchy
+hierarchy -check -top mini_soc
+
+# Process RTL
+proc
+opt
+fsm
+opt
+memory
+opt
+
+# Technology mapping
+techmap
+opt
+
+# Map flip-flops to OSU018 standard cells
+dfflibmap -liberty /home/lab-user/Desktop/bootcamp-files/Tech-pdks/osu018/osu018_stdcells.lib
+
+# Map combinational logic to OSU018 standard cells
+abc -liberty /home/lab-user/Desktop/bootcamp-files/Tech-pdks/osu018/osu018_stdcells.lib
+
+# Remove unused logic
+clean
+
+# Show synthesis statistics
+stat
+
+# Write synthesized gate-level netlist
+write_verilog -noattr mini_soc_netlist.v
